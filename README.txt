@@ -346,6 +346,64 @@ D:\JpaNQueryDsl\springbatch\build\libs>
 
     - 동기화 메서드와 동기화 블록
 
+/**
+ *   <스레드의 상태제어>
+ *       - 실행중에 있는 쓰레드의 상태를 변경할 수 있다.
+ *     * - sleep()     : 주어진 시간 동안 일시 정지  (단위 : 밀리세컨드, 1/1,000초)
+ *       - yield()     : 다른 쓰레드에게 실행 양보.
+ *       - join()      : 다른 쓰레드의 종료를 기다림.
+ *       <쓰레드 간의 협업 - 동기화 쓰레드에서만 사용 가능>
+ *        * - wait()   : notify() 가 호출되기 전까지 무제한 잠을 자고 있음. Toggle 개념.
+ *          - notify() : wait() 하고 있는 쓰레드를 깨워서 일을 시킴.
+ *          - notifyAll()
+ *     * - interrupt()  : 일시정지 상태를 만나면, InterruptException 에러를 발생시킴.
+ *       - Deprecated 됨 : resume() / suspend() / - stop()
+ *
+ * */
+
+    - 데몬 쓰레드 (Daemon Thread)
+        : 메인 쓰레드 밑에 데몬 쓰레드를 실행시킬 수 있는데,
+          메인이 종료되면, 데몬도 종료된다.
+
+    - 쓰레드 그룹 (Thread Group)
+        : 그룹으로 관리하면, 그룹단위로 실행 종료시킬 수 있다.
+        : 일괄 Interrupt() 시 유용함.
+			System.out.println("소속 그룹   : " + thread.getThreadGroup().getName());
+			System.out.println("스레드 이름 : " + thread.getName() + ((thread.isDaemon() ? " (데몬스레드)" : " (주스레드)")));
+
+                소속 그룹   : main
+                스레드 이름 : AutoSaveThread (데몬스레드)
+
+
+		System.out.println("[메인 스레드 그룹의 list()메서드 호출 후 출력 내용]");
+		ThreadGroup mainGroup = Thread.currentThread().getThreadGroup();
+
+		//메인그룹 포함 하위그룹까지 모든 정보가 출력됨.
+		mainGroup.list();
+
+            java.lang.ThreadGroup[name=main,maxpri=10]           // ThreadGroup 정보, 최대우선순위 :10
+                Thread[main,5,main]                              // 메인에 5개의 쓰레드 실행 중
+                Thread[Monitor Ctrl-Break,5,main]                //
+                Thread[Attach API wait loop,10,main]             //
+                java.lang.ThreadGroup[name=myGroup,maxpri=10]    // 하위 그룹정보.
+                    Thread[workThreadA,5,myGroup]                // 하위 그룹1 : 우선순위 =5
+                    Thread[workThreadB,5,myGroup]                // 하위 그룹2 : 우선순위 =5
+
+
+
+    - 스레드 풀 (Thread Pool)
+        : 작업 처리에 사용되는 스레드들 제한된 개수 만큼 미리 생성
+          작업 큐에 들어오는 순서대로 하나씩 쓰레드가 처리한다.
+
+        ======================================================================================
+          메소드명(매개변수)                    초기 쓰레드 수  | 코어 쓰레드 수  | 최대 쓰레드 수
+        --------------------------------------------------------------------------------------
+        ▶ newCachedThreadPool()            ☞           0  |            0  | Integer.MAX_VALUE
+        ▶ newFixedThreadPool(int nThreads) ☞           0  |     nThreads  | nThreads
+        ======================================================================================
+
+
+
 
 
 
