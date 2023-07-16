@@ -5,6 +5,66 @@ Java 문법 - 초급 예제, 중급 예제,  고급 예제
 
 **<java 초급 강좌 >**
 
+<배치 템플릿 만들기>
+
+***. 환경 설정 .***
+   - java : jdk 11 & Gradle Groovy
+   - Spring Boot 2.7.13
+   - Spring Batch 5.0.2
+   - Database : MySQL 5.6, JPA 2.2
+   - Schedule : quartz 2.3.0
+
+
+
+<배치프레임워크 관련 테이블>
+   - DDL.sql 파일에 있는 쿼리로 테이블 생성을 권장합니다.
+
+
+0. 예제
+    - MainTaskletJob    : 기본 템플릿 (Job -> Step)
+    - DeptTableCopyJob  : 원천테이블(Dept)을 select해서, 목적테이블(Dept2) 에 insert 한다.
+
+1. Dummy Reader -> Dummy Processor -> Dummy Writer
+    - DummyToDummyBatch              : 완료 (20230628)
+
+2. Memory Reader -> Text Processor -> Console Writer
+    - MemoryToConsoleBatch           : Reader / Processor / Writer 분리해서 처리하기.
+    - MemoryToFileDelimitedTxtBatch  : "|" 구분자로 Text파일 생성하기. (-> /files/out/customerw.txt)
+    - MemoryToFileFormattedTxtBatch  : 고정길이 Text파일 생성하기.     (-> /files/out/clientFomatted.txt)
+
+3. File Reader -> text Processor -> Console Writer
+    - FileJsonToConsoleBatch         : JSON 파일 읽고 콘솔에 쓰기
+    - FileDelimitedCsvToConsoleBatch : CSV 파일 읽고 콘솔에 쓰기
+    - FileFormattedTxtToConsoleBatch :
+
+4. DB Reader -> text Processor -> DB writer
+    - DBToDBSynchronizedBatch        : 완료 (20230628)
+    - DBToJsonFileBatch              : 완료 (20230628)
+    - DBToXMLFileBatch               : 완료 (20230628)
+
+5. DB to Json_File to DB
+    - DBToJsonToDBBatch              : 완료 (20230629)
+
+
+6. File Reader -> text Processor -> DB Writer
+    - FileJsonToDBBatch
+    - FileDelimitedToDBBatch
+    - FileFormattedToDBBatch
+
+7. 추가 할일
+    - 스케줄 확정
+    - 개별 실행 방법
+
+
+
+<CLI에서 애플리케이션으로 실행하는 방식>
+D:\JpaNQueryDsl\springbatch\build\libs>
+ : java -jar springbatch-0.0.1-SNAPSHOT.jar name=anakin seq(LONG)=2L creatdDt(date)=2023-06-20 age(double)=3.14
+
+
+
+<java 초급 강좌 >
+
 1. 자바란? 자바변수, 연산자
     - 01. Prologue
     - 02. 자바가 무엇일까?
@@ -26,7 +86,7 @@ Java 문법 - 초급 예제, 중급 예제,  고급 예제
 
 
 
-**<java 중급 강좌>**
+<java 중급 강좌 >
 
 01. 클래스와 객체-1
     - 객체지향언어의 개념
@@ -216,6 +276,82 @@ Java 문법 - 초급 예제, 중급 예제,  고급 예제
 
 
 
+<java 고급 강좌 >
+
+01. 제네릭(Generic)
+    - 제네릭 타입이란 타입을 파라미터화하여, 실행 시에 구체적으로 해당하는 타입으로 결정이 되는 것을 의미한다.
+    - 제네릭을 사용하면 컴파일 시에 강한 타입 체크 뿐만 아니라, 타입변환(Casting)을 사전에 제거할 수가 있다.
+        : public class Person<T>
+
+    - <멀티 타입 파라미터>
+        : 제네릭은 2개 이상의 타입 파라메터를 사용해서 선언할 수가 있으며, 각 타입 파라메터는 콤마(,)로 구분한다.
+        : public class Product<T,M>
+
+    - <제네릭 메서드>는 리턴 타입 앞에 꺽쇠 기호를 추가하고, 타입 파라메터를 기술하며, 타입 파라메터를 리턴 타입과 매개변수에 사용한다.
+        : public static<T> Person<T> changing(T t)
+        : Person<Integer> p1 = Util.<Integer>changing(new Integer(100));
+
+    - 타입 파라메터의 제한
+        : 메서드의 타입 파라메터를 구체적으로 타입을 제한하고자 할 때 사용한다.
+        : 상속이나 구현 관계를 이용하여 타입 파라메터를 제한할 수 있다.
+            public static void registerCourse(Course<T> course) {                          // 제한 없음
+            public static void registerCourseStudent(Course<T extends Student> course) {   // 익상 : 상위 클래스 제한
+            public static void registerCourseWorker(Course<T super Worker> course) {       // 수하 : 하위 클래스 제한.
+
+        : 와일드 카드. ?
+            public static void registerCourse(Course<?> course) {                          // 제한 없음
+            public static void registerCourseStudent(Course<? extends Student> course) {   // 익상 : 상위 클래스 제한
+            public static void registerCourseWorker(Course<? super Worker> course) {       // 수하 : 하위 클래스 제한.
+
+    - 제네릭 타입의 상속과 구현
+        : 조상이 제네릭이면 자손도 제네릭타입이어야 한다.
+          public class Student<T,M,C> extends Person<T,M>{
+
+
+02. 멀티 쓰레드
+
+    - 프로세스(process)란
+        : 보통 프로세스라고 함은 실행 중인 하나의 프로그램을 칭한다.
+
+    - 멀티 태스킹(multi tasking)
+        : 멀티 태스킹은 통상 두 가지 이상의 작업을 동시에 처리하는 것을 칭한다.
+
+        멀티 프로세스 : 독립적 프로그램을 여러 번 실행하고 작업을 처리하는 것
+        멀티 스레드   : 하나의 프로그램을 실행하여, 내부적으로 여러 가지 작업을 처리하는 것
+
+    - 메인 스레드(main thread)
+        : 모든 자바 프로그램은 JVM의 메인스레드가 main()를 실행하면서 시작한다.
+
+    - 작업 스레드
+        : 메인 스레드는 작업 스레드들을 만들어서 병렬로 코드를 실행할 수 있으며, 그것이 곧, 멀티 태스킹을 수행하는 것이다.
+
+    - 프로세스의 종료
+        ▶ 싱글 스레드: 메인 스레드가 종료하면 프로세스도 함께 종료됨.
+        ▶ 멀티 스레드: 실행 중인 스레드가 하나라도 있다면, 프로세스 종료되지 않는다.
+            ☞ 메인 스레드가 작업 스레드보다 먼저 종료되더라도, 작업 스레드가 계속 실행 중이라면, 프로세스는 종료되지 않는다.
+
+    - 작업 스레드 생성과 실행
+        ▶ 몇 개의 작업을 병렬로 실행해야 할지 설계 단에서 결정해야 한다
+            ☞ Thread 클래스로부터 직접 생성한다.
+            ☞ Thread 하위 클래스로부터 생성한다.
+
+    - Thread클래스로부터 직접 생성
+        ▶ 방법 1(인터페이스를 통한 구현객체 이용) ☞ 가장 많이 이용함
+        ▶ 방법 2(익명 구현객체 이용)            ☞ 간단히 이용
+        ▶ 방법 3(람다(함수적 인터페이스)식 이용)  ☞ 코드 최소화
+
+    - 동시성과 병렬성
+        ▶ 동시성
+            ☞ 멀티작업 위해 하나의 코어에서 멀티 스레드가 번갈아 가며 실행하는 성질
+        ▶ 병렬성
+            ☞ 멀티작업을 위해 멀티 코어에서 개별 스레드를 동시에 실행하는 성질
+
+    - 스레드 우선 순위
+        ▶ thread.setPriority(Thread.MAX_PRIORITY);
+        ▶ thread.setPriority(Thread.MIN_PRIORITY);
+        ▶ thread.setPriority(Thread.NORM_PRIORITY);
+
+    - 동기화 메서드와 동기화 블록
 
 
 
