@@ -353,6 +353,7 @@ D:\JpaNQueryDsl\springbatch\build\libs>
 
     - 동기화 메서드와 동기화 블록
 
+
 /**
  *   <스레드의 상태제어>
  *       - 실행중에 있는 쓰레드의 상태를 변경할 수 있다.
@@ -367,6 +368,7 @@ D:\JpaNQueryDsl\springbatch\build\libs>
  *       - Deprecated 됨 : resume() / suspend() / - stop()
  *
  * */
+
 
     - 데몬 쓰레드 (Daemon Thread)
         : 메인 쓰레드 밑에 데몬 쓰레드를 실행시킬 수 있는데,
@@ -408,6 +410,8 @@ D:\JpaNQueryDsl\springbatch\build\libs>
         ▶ newCachedThreadPool()            ☞           0  |            0  | Integer.MAX_VALUE
         ▶ newFixedThreadPool(int nThreads) ☞           0  |     nThreads  | nThreads
         ======================================================================================
+
+
 
 
 
